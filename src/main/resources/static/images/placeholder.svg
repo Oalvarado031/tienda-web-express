@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" width="400" height="500">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fbeeea"/>
+      <stop offset="100%" stop-color="#f3d9d3"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="500" fill="url(#g)"/>
+  <g fill="#b88a6a" opacity="0.6">
+    <circle cx="200" cy="200" r="60"/>
+    <path d="M120 360 Q200 280 280 360 L280 420 L120 420 Z"/>
+  </g>
+  <text x="200" y="470" text-anchor="middle"
+        font-family="Playfair Display, Georgia, serif"
+        font-size="20" fill="#8e664a">Boutique Express</text>
+</svg>

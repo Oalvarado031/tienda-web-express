@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head(${titulo})}"></head>
+<body>
+
+<header th:replace="~{fragments :: header}"></header>
+
+<main class="contenedor">
+    <section class="encabezado-pagina">
+        <h1>Catalogo</h1>
+        <p>Explora todas nuestras prendas</p>
+    </section>
+
+    <!-- FILTROS -->
+    <section class="filtros">
+        <button class="chip" data-categoria="todas"
+                th:classappend="${categoriaSeleccionada == null} ? ' chip-activo' : ''">
+            Todas
+        </button>
+        <button class="chip"
+                th:each="c : ${categorias}"
+                th:data-categoria="${c.id}"
+                th:text="${c.nombre}"
+                th:classappend="${categoriaSeleccionada != null and categoriaSeleccionada == c.id} ? ' chip-activo' : ''">
+            Categoria
+        </button>
+    </section>
+
+    <!-- PRODUCTOS -->
+    <section class="grid-productos" id="gridProductos">
+        <article class="tarjeta"
+                 th:each="p : ${productos}"
+                 th:data-categoria="${p.categoria.id}">
+            <div class="tarjeta-img">
+                <img th:src="@{'/images/' + ${p.imagen}}"
+                     th:alt="${p.nombre}"
+                     onerror="this.src='/images/placeholder.svg'">
+                <span class="badge" th:text="${p.categoria.nombre}">Categoria</span>
+                <span class="badge-stock"
+                      th:classappend="${p.disponible} ? ' stock-ok' : ' stock-no'"
+                      th:text="${p.disponible} ? 'Disponible' : 'Agotado'">Disponible</span>
+            </div>
+            <div class="tarjeta-cuerpo">
+                <h3 th:text="${p.nombre}">Nombre</h3>
+                <p class="precio">C$ <span th:text="${p.precio}">0.00</span></p>
+                <div class="tarjeta-acciones">
+                    <a th:href="@{'/producto/' + ${p.id}}" class="btn-secundario">Ver detalle</a>
+                    <button class="btn-mini btn-agregar"
+                            th:data-id="${p.id}"
+                            th:data-nombre="${p.nombre}"
+                            th:disabled="${!p.disponible}">+</button>
+                </div>
+            </div>
+        </article>
+    </section>
+
+    <div th:if="${#lists.isEmpty(productos)}" class="aviso-vacio">
+        No hay productos en esta categoria todavia.
+    </div>
+</main>
+
+<!-- Mensaje emergente (toast) -->
+<div id="toast" class="toast"></div>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+<div th:replace="~{fragments :: scripts}"></div>
+
+</body>
+</html>

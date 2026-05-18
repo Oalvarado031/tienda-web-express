@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head(${titulo})}"></head>
+<body>
+
+<header th:replace="~{fragments :: header}"></header>
+
+<main class="contenedor">
+    <section class="confirmacion">
+        <div class="check">&#10003;</div>
+        <h1>Pedido confirmado</h1>
+        <p class="mensaje-flash" th:if="${mensaje}" th:text="${mensaje}"></p>
+        <p>Tu pedido <strong>#<span th:text="${pedidoId}">0</span></strong> ha sido registrado.</p>
+        <p>Recibiras un correo de confirmacion en breve.</p>
+        <a th:href="@{/catalogo}" class="btn-principal">Seguir comprando</a>
+    </section>
+</main>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+<div th:replace="~{fragments :: scripts}"></div>
+
+</body>
+</html>
