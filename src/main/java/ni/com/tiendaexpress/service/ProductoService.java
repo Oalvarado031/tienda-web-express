@@ -34,4 +34,13 @@ public class ProductoService {
     public Optional<Producto> buscarPorId(Long id) {
         return productoRepository.findById(id);
     }
+
+    /**
+     * Busqueda combinada: por nombre, por categoria o por ambos.
+     * Limpia espacios en blanco y trata cadenas vacias como null.
+     */
+    public List<Producto> buscar(String nombre, Long categoriaId) {
+        String nombreLimpio = (nombre == null || nombre.trim().isEmpty()) ? null : nombre.trim();
+        return productoRepository.buscarPorNombreYCategoria(nombreLimpio, categoriaId);
+    }
 }

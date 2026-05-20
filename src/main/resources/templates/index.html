@@ -6,49 +6,71 @@
 <header th:replace="~{fragments :: header}"></header>
 
 <main>
-    <!-- BANNER PRINCIPAL -->
-    <section class="banner">
-        <div class="banner-contenido">
-            <span class="banner-etiqueta">Nueva temporada</span>
-            <h1>Encuentra tu <em>estilo</em></h1>
-            <p>Moda cuidada, prendas atemporales y atencion personalizada.</p>
-            <a th:href="@{/catalogo}" class="btn-principal">Ver catalogo</a>
+    <!-- BANNER -->
+    <section class="banner-tienda">
+        <div class="container">
+            <span class="badge text-white px-3 py-2 mb-3 rounded-pill"
+                  style="background-color: var(--color-acento) !important;">NUEVA TEMPORADA</span>
+            <h1 class="display-4 fw-bold">Encuentra tu <em>estilo</em></h1>
+            <p class="lead text-muted mb-4">Moda cuidada, prendas atemporales y atencion personalizada.</p>
+            <a th:href="@{/catalogo}" class="btn btn-acento btn-lg">Ver catalogo</a>
         </div>
     </section>
 
-    <!-- PRODUCTOS DESTACADOS -->
-    <section class="seccion">
-        <div class="seccion-titulo">
-            <h2>Destacados de la semana</h2>
-            <p>Las piezas mas buscadas por nuestras clientas</p>
+    <!-- DESTACADOS -->
+    <section class="container py-5">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Destacados de la semana</h2>
+            <p class="text-muted">Las piezas mas buscadas por nuestras clientas</p>
         </div>
 
-        <div class="grid-productos">
-            <article class="tarjeta" th:each="p : ${destacados}">
-                <div class="tarjeta-img">
-                    <img th:src="@{'/images/' + ${p.imagen}}"
-                         th:alt="${p.nombre}"
-                         onerror="this.src='/images/placeholder.svg'">
-                    <span class="badge" th:text="${p.categoria.nombre}">Categoria</span>
+        <div class="row g-4">
+            <div class="col-12 col-sm-6 col-lg-3" th:each="p : ${destacados}">
+                <div class="card tarjeta-producto h-100">
+                    <div class="position-relative">
+                        <img th:src="@{'/images/' + ${p.imagen}}"
+                             th:alt="${p.nombre}"
+                             class="producto-img card-img-top"
+                             onerror="this.src='/images/placeholder.svg'">
+                        <span class="badge badge-categoria position-absolute top-0 start-0 m-2 px-2 py-1 rounded-pill"
+                              th:text="${p.categoria.nombre}">Categoria</span>
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <h3 class="h6 fw-bold" th:text="${p.nombre}">Nombre</h3>
+                        <p class="precio mb-3">C$ <span th:text="${p.precio}">0.00</span></p>
+                        <a th:href="@{'/producto/' + ${p.id}}" class="btn btn-outline-acento mt-auto">Ver detalle</a>
+                    </div>
                 </div>
-                <div class="tarjeta-cuerpo">
-                    <h3 th:text="${p.nombre}">Nombre</h3>
-                    <p class="precio">C$ <span th:text="${p.precio}">0.00</span></p>
-                    <a th:href="@{'/producto/' + ${p.id}}" class="btn-secundario">Ver detalle</a>
-                </div>
-            </article>
+            </div>
         </div>
 
-        <div th:if="${#lists.isEmpty(destacados)}" class="aviso-vacio">
+        <div th:if="${#lists.isEmpty(destacados)}"
+             class="alert alert-light text-center mt-4">
             No hay productos destacados todavia.
         </div>
     </section>
 
     <!-- BENEFICIOS -->
-    <section class="beneficios">
-        <div class="beneficio"><strong>Envio rapido</strong><span>A todo Nicaragua</span></div>
-        <div class="beneficio"><strong>Cambios faciles</strong><span>Hasta 7 dias</span></div>
-        <div class="beneficio"><strong>Atencion personal</strong><span>WhatsApp directo</span></div>
+    <section class="bg-white py-4 border-top">
+        <div class="container">
+            <div class="row text-center g-3">
+                <div class="col-12 col-md-4">
+                    <i class="bi bi-truck fs-2" style="color: var(--color-acento);"></i>
+                    <h6 class="fw-bold mt-2 mb-0">Envio rapido</h6>
+                    <small class="text-muted">A todo Nicaragua</small>
+                </div>
+                <div class="col-12 col-md-4">
+                    <i class="bi bi-arrow-repeat fs-2" style="color: var(--color-acento);"></i>
+                    <h6 class="fw-bold mt-2 mb-0">Cambios faciles</h6>
+                    <small class="text-muted">Hasta 7 dias</small>
+                </div>
+                <div class="col-12 col-md-4">
+                    <i class="bi bi-chat-heart fs-2" style="color: var(--color-acento);"></i>
+                    <h6 class="fw-bold mt-2 mb-0">Atencion personal</h6>
+                    <small class="text-muted">WhatsApp directo</small>
+                </div>
+            </div>
+        </div>
     </section>
 </main>
 

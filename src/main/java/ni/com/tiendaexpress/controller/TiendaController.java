@@ -13,6 +13,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -38,14 +39,38 @@ public class TiendaController {
         return "index";
     }
 
-    // === 2. CATALOGO DE PRODUCTOS ===
+    // === 2. CATALOGO con BUSQUEDA INTEGRADA (nombre + categoria) ===
     @GetMapping("/catalogo")
-    public String catalogo(@RequestParam(required = false) Long categoriaId, Model model) {
+    public String catalogo(@RequestParam(required = false) String nombre,
+                           @RequestParam(required = false) Long categoriaId,
+                           Model model) {
+        List<Producto> productos = productoService.buscar(nombre, categoriaId);
+
         model.addAttribute("titulo", "Catalogo de productos");
         model.addAttribute("categorias", categoriaService.listarTodas());
-        model.addAttribute("productos", productoService.filtrarPorCategoria(categoriaId));
+        model.addAttribute("productos", productos);
+        model.addAttribute("nombreBuscado", nombre);
         model.addAttribute("categoriaSeleccionada", categoriaId);
         return "catalogo";
+    }
+
+    // === PAGINA DEDICADA A BUSQUEDA AVANZADA ===
+    @GetMapping("/buscar")
+    public String buscar(@RequestParam(required = false) String nombre,
+                         @RequestParam(required = false) Long categoriaId,
+                         Model model) {
+        boolean haySeleccion = (nombre != null && !nombre.isBlank()) || categoriaId != null;
+        List<Producto> resultados = haySeleccion
+                ? productoService.buscar(nombre, categoriaId)
+                : List.of();
+
+        model.addAttribute("titulo", "Buscar productos");
+        model.addAttribute("categorias", categoriaService.listarTodas());
+        model.addAttribute("resultados", resultados);
+        model.addAttribute("nombreBuscado", nombre);
+        model.addAttribute("categoriaSeleccionada", categoriaId);
+        model.addAttribute("haySeleccion", haySeleccion);
+        return "buscar";
     }
 
     // === 3. DETALLE DEL PRODUCTO ===

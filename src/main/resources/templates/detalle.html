@@ -5,53 +5,70 @@
 
 <header th:replace="~{fragments :: header}"></header>
 
-<main class="contenedor">
-    <a th:href="@{/catalogo}" class="volver">&larr; Volver al catalogo</a>
+<main class="container py-5">
+    <a th:href="@{/catalogo}" class="text-decoration-none text-muted mb-3 d-inline-block">
+        <i class="bi bi-arrow-left"></i> Volver al catalogo
+    </a>
 
-    <section class="detalle">
-        <div class="detalle-img">
-            <img th:src="@{'/images/' + ${producto.imagen}}"
-                 th:alt="${producto.nombre}"
-                 onerror="this.src='/images/placeholder.svg'">
-        </div>
+    <div class="card border-0 shadow-sm">
+        <div class="row g-0">
+            <div class="col-12 col-md-6">
+                <img th:src="@{'/images/' + ${producto.imagen}}"
+                     th:alt="${producto.nombre}"
+                     class="detalle-img"
+                     onerror="this.src='/images/placeholder.svg'">
+            </div>
 
-        <div class="detalle-info">
-            <span class="badge" th:text="${producto.categoria.nombre}">Categoria</span>
-            <h1 th:text="${producto.nombre}">Nombre del producto</h1>
+            <div class="col-12 col-md-6">
+                <div class="card-body p-4 p-md-5">
+                    <span class="badge text-bg-light border mb-2 px-3 py-2"
+                          th:text="${producto.categoria.nombre}">Categoria</span>
 
-            <p class="precio-grande">C$ <span th:text="${producto.precio}">0.00</span></p>
+                    <h1 class="fw-bold" th:text="${producto.nombre}">Nombre del producto</h1>
 
-            <p class="disponibilidad"
-               th:classappend="${producto.disponible} ? ' stock-ok' : ' stock-no'">
-                <span th:if="${producto.disponible}">
-                    En stock (<span th:text="${producto.stock}">0</span> unidades disponibles)
-                </span>
-                <span th:unless="${producto.disponible}">Producto agotado</span>
-            </p>
+                    <p class="precio-grande">C$ <span th:text="${producto.precio}">0.00</span></p>
 
-            <h3>Descripcion</h3>
-            <p class="detalle-descripcion" id="descripcionProducto"
-               th:text="${producto.descripcion}">Descripcion del producto.</p>
+                    <p class="mb-3">
+                        <span class="badge px-3 py-2"
+                              th:classappend="${producto.disponible} ? 'text-bg-success' : 'text-bg-danger'">
+                            <span th:if="${producto.disponible}">
+                                <i class="bi bi-check-circle"></i>
+                                En stock (<span th:text="${producto.stock}">0</span> unidades)
+                            </span>
+                            <span th:unless="${producto.disponible}">
+                                <i class="bi bi-x-circle"></i> Producto agotado
+                            </span>
+                        </span>
+                    </p>
 
-            <div class="detalle-acciones">
-                <button id="btnToggleDesc" class="btn-secundario">Ocultar descripcion</button>
-                <a th:href="@{/pedido(productoId=${producto.id})}"
-                   class="btn-principal"
-                   th:classappend="${!producto.disponible} ? ' btn-deshabilitado' : ''">
-                    Solicitar producto
-                </a>
-                <button class="btn-mini btn-agregar"
-                        th:data-id="${producto.id}"
-                        th:data-nombre="${producto.nombre}"
-                        th:disabled="${!producto.disponible}">
-                    Agregar al carrito
-                </button>
+                    <h6 class="text-muted text-uppercase mt-4 mb-2">Descripcion</h6>
+                    <p class="text-muted" id="descripcionProducto" th:text="${producto.descripcion}">
+                        Descripcion del producto.
+                    </p>
+
+                    <div class="d-flex flex-wrap gap-2 mt-4">
+                        <button id="btnToggleDesc" class="btn btn-outline-acento btn-sm">
+                            Ocultar descripcion
+                        </button>
+                        <a th:href="@{/pedido(productoId=${producto.id})}"
+                           class="btn btn-acento"
+                           th:classappend="${!producto.disponible} ? 'disabled' : ''">
+                            <i class="bi bi-bag-plus"></i> Solicitar producto
+                        </a>
+                        <button class="btn btn-outline-acento btn-agregar"
+                                th:data-id="${producto.id}"
+                                th:data-nombre="${producto.nombre}"
+                                th:disabled="${!producto.disponible}">
+                            <i class="bi bi-cart-plus"></i> Agregar al carrito
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
-    </section>
+    </div>
 </main>
 
-<div id="toast" class="toast"></div>
+<div id="toast" class="toast-tienda"></div>
 
 <footer th:replace="~{fragments :: footer}"></footer>
 <div th:replace="~{fragments :: scripts}"></div>

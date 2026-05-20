@@ -5,15 +5,31 @@
 
 <header th:replace="~{fragments :: header}"></header>
 
-<main class="contenedor">
-    <section class="confirmacion">
-        <div class="check">&#10003;</div>
-        <h1>Pedido confirmado</h1>
-        <p class="mensaje-flash" th:if="${mensaje}" th:text="${mensaje}"></p>
-        <p>Tu pedido <strong>#<span th:text="${pedidoId}">0</span></strong> ha sido registrado.</p>
-        <p>Recibiras un correo de confirmacion en breve.</p>
-        <a th:href="@{/catalogo}" class="btn-principal">Seguir comprando</a>
-    </section>
+<main class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-6">
+            <div class="card border-0 shadow-sm text-center p-5">
+                <div class="mb-3">
+                    <span class="d-inline-flex align-items-center justify-content-center bg-success text-white rounded-circle mx-auto"
+                          style="width:80px; height:80px; font-size:2rem;">
+                        <i class="bi bi-check-lg"></i>
+                    </span>
+                </div>
+                <h1 class="fw-bold mb-3">Pedido confirmado</h1>
+
+                <div th:if="${mensaje}" class="alert alert-light border" th:text="${mensaje}"></div>
+
+                <p class="text-muted">
+                    Tu pedido <strong>#<span th:text="${pedidoId}">0</span></strong> ha sido registrado.
+                </p>
+                <p class="text-muted">Recibiras un correo de confirmacion en breve.</p>
+
+                <a th:href="@{/catalogo}" class="btn btn-acento mt-3">
+                    <i class="bi bi-bag"></i> Seguir comprando
+                </a>
+            </div>
+        </div>
+    </div>
 </main>
 
 <footer th:replace="~{fragments :: footer}"></footer>

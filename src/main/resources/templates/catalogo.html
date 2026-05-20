@@ -5,62 +5,114 @@
 
 <header th:replace="~{fragments :: header}"></header>
 
-<main class="contenedor">
-    <section class="encabezado-pagina">
-        <h1>Catalogo</h1>
-        <p>Explora todas nuestras prendas</p>
-    </section>
+<main class="container py-5">
+    <div class="text-center mb-4">
+        <h1 class="fw-bold">Catalogo</h1>
+        <p class="text-muted">Explora todas nuestras prendas</p>
+    </div>
 
-    <!-- FILTROS -->
-    <section class="filtros">
-        <button class="chip" data-categoria="todas"
-                th:classappend="${categoriaSeleccionada == null} ? ' chip-activo' : ''">
-            Todas
-        </button>
-        <button class="chip"
-                th:each="c : ${categorias}"
-                th:data-categoria="${c.id}"
-                th:text="${c.nombre}"
-                th:classappend="${categoriaSeleccionada != null and categoriaSeleccionada == c.id} ? ' chip-activo' : ''">
-            Categoria
-        </button>
-    </section>
+    <!-- FORMULARIO DE BUSQUEDA Y FILTROS COMBINADOS -->
+    <div class="card shadow-sm mb-4 border-0">
+        <div class="card-body">
+            <form th:action="@{/catalogo}" method="get" class="row g-2 align-items-end">
 
-    <!-- PRODUCTOS -->
-    <section class="grid-productos" id="gridProductos">
-        <article class="tarjeta"
-                 th:each="p : ${productos}"
-                 th:data-categoria="${p.categoria.id}">
-            <div class="tarjeta-img">
-                <img th:src="@{'/images/' + ${p.imagen}}"
-                     th:alt="${p.nombre}"
-                     onerror="this.src='/images/placeholder.svg'">
-                <span class="badge" th:text="${p.categoria.nombre}">Categoria</span>
-                <span class="badge-stock"
-                      th:classappend="${p.disponible} ? ' stock-ok' : ' stock-no'"
-                      th:text="${p.disponible} ? 'Disponible' : 'Agotado'">Disponible</span>
-            </div>
-            <div class="tarjeta-cuerpo">
-                <h3 th:text="${p.nombre}">Nombre</h3>
-                <p class="precio">C$ <span th:text="${p.precio}">0.00</span></p>
-                <div class="tarjeta-acciones">
-                    <a th:href="@{'/producto/' + ${p.id}}" class="btn-secundario">Ver detalle</a>
-                    <button class="btn-mini btn-agregar"
-                            th:data-id="${p.id}"
-                            th:data-nombre="${p.nombre}"
-                            th:disabled="${!p.disponible}">+</button>
+                <div class="col-12 col-md-5">
+                    <label for="nombre" class="form-label fw-semibold small">Buscar por nombre</label>
+                    <input type="text" class="form-control" id="nombre" name="nombre"
+                           th:value="${nombreBuscado}"
+                           placeholder="Ej: vestido, blusa, jeans...">
+                </div>
+
+                <div class="col-12 col-md-4">
+                    <label for="categoriaId" class="form-label fw-semibold small">Categoria</label>
+                    <select class="form-select" id="categoriaId" name="categoriaId">
+                        <option value="">Todas las categorias</option>
+                        <option th:each="c : ${categorias}"
+                                th:value="${c.id}"
+                                th:text="${c.nombre}"
+                                th:selected="${categoriaSeleccionada != null and categoriaSeleccionada == c.id}">
+                            Categoria
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-12 col-md-3 d-flex gap-2">
+                    <button type="submit" class="btn btn-acento flex-fill">
+                        <i class="bi bi-search"></i> Buscar
+                    </button>
+                    <a th:href="@{/catalogo}" class="btn btn-outline-acento flex-fill">
+                        Limpiar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Chips de filtros activos -->
+    <div class="mb-3" th:if="${(nombreBuscado != null and !#strings.isEmpty(nombreBuscado)) or categoriaSeleccionada != null}">
+        <small class="text-muted me-2">Filtros activos:</small>
+
+        <span class="chip-busqueda me-1"
+              th:if="${nombreBuscado != null and !#strings.isEmpty(nombreBuscado)}">
+            <i class="bi bi-tag"></i>
+            Nombre: <strong th:text="${nombreBuscado}"></strong>
+        </span>
+
+        <span class="chip-busqueda me-1" th:if="${categoriaSeleccionada != null}">
+            <i class="bi bi-folder"></i>
+            Categoria:
+            <strong th:each="c : ${categorias}"
+                    th:if="${c.id == categoriaSeleccionada}"
+                    th:text="${c.nombre}"></strong>
+        </span>
+
+        <span class="text-muted small">&middot; <span th:text="${#lists.size(productos)}">0</span> resultados</span>
+    </div>
+
+    <!-- LISTADO DE PRODUCTOS -->
+    <div class="row g-4" th:if="${not #lists.isEmpty(productos)}">
+        <div class="col-12 col-sm-6 col-lg-3" th:each="p : ${productos}">
+            <div class="card tarjeta-producto h-100">
+                <div class="position-relative">
+                    <img th:src="@{'/images/' + ${p.imagen}}"
+                         th:alt="${p.nombre}"
+                         class="producto-img card-img-top"
+                         onerror="this.src='/images/placeholder.svg'">
+                    <span class="badge badge-categoria position-absolute top-0 start-0 m-2 px-2 py-1 rounded-pill"
+                          th:text="${p.categoria.nombre}">Categoria</span>
+                    <span class="badge position-absolute top-0 end-0 m-2 px-2 py-1 rounded-pill"
+                          th:classappend="${p.disponible} ? 'text-bg-success' : 'text-bg-danger'"
+                          th:text="${p.disponible} ? 'Disponible' : 'Agotado'">Disponible</span>
+                </div>
+                <div class="card-body d-flex flex-column">
+                    <h3 class="h6 fw-bold" th:text="${p.nombre}">Nombre</h3>
+                    <p class="precio mb-3">C$ <span th:text="${p.precio}">0.00</span></p>
+                    <div class="d-flex gap-2 mt-auto">
+                        <a th:href="@{'/producto/' + ${p.id}}" class="btn btn-outline-acento btn-sm flex-fill">
+                            Ver detalle
+                        </a>
+                        <button class="btn btn-acento btn-sm btn-agregar"
+                                th:data-id="${p.id}"
+                                th:data-nombre="${p.nombre}"
+                                th:disabled="${!p.disponible}">
+                            <i class="bi bi-plus-lg"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
-        </article>
-    </section>
+        </div>
+    </div>
 
-    <div th:if="${#lists.isEmpty(productos)}" class="aviso-vacio">
-        No hay productos en esta categoria todavia.
+    <!-- Mensaje cuando no hay resultados -->
+    <div th:if="${#lists.isEmpty(productos)}" class="alert alert-warning text-center py-5 mt-3">
+        <i class="bi bi-search fs-1 d-block mb-2"></i>
+        <h4 class="fw-bold">No se encontraron productos</h4>
+        <p class="mb-3">Prueba con otros terminos o limpia los filtros para ver todo el catalogo.</p>
+        <a th:href="@{/catalogo}" class="btn btn-acento">Ver todo el catalogo</a>
     </div>
 </main>
 
-<!-- Mensaje emergente (toast) -->
-<div id="toast" class="toast"></div>
+<div id="toast" class="toast-tienda"></div>
 
 <footer th:replace="~{fragments :: footer}"></footer>
 <div th:replace="~{fragments :: scripts}"></div>

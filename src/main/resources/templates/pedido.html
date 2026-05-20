@@ -5,72 +5,86 @@
 
 <header th:replace="~{fragments :: header}"></header>
 
-<main class="contenedor">
-    <section class="encabezado-pagina">
-        <h1>Solicitar pedido</h1>
-        <p>Completa el formulario y nos pondremos en contacto contigo</p>
-    </section>
+<main class="container py-5">
+    <div class="text-center mb-4">
+        <h1 class="fw-bold">Solicitar pedido</h1>
+        <p class="text-muted">Completa el formulario y nos pondremos en contacto contigo</p>
+    </div>
 
-    <form th:action="@{/pedido}" th:object="${pedidoForm}" method="post"
-          class="formulario" id="formPedido" novalidate>
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
 
-        <div class="campo">
-            <label for="nombreCliente">Nombre completo *</label>
-            <input type="text" id="nombreCliente" th:field="*{nombreCliente}"
-                   placeholder="Maria Lopez" minlength="2" maxlength="150" required>
-            <small class="error-js" data-error-for="nombreCliente"></small>
-            <small class="error" th:if="${#fields.hasErrors('nombreCliente')}"
-                   th:errors="*{nombreCliente}"></small>
+                    <form th:action="@{/pedido}" th:object="${pedidoForm}" method="post"
+                          id="formPedido" novalidate>
+
+                        <div class="mb-3">
+                            <label for="nombreCliente" class="form-label fw-semibold">Nombre completo *</label>
+                            <input type="text" class="form-control" id="nombreCliente"
+                                   th:field="*{nombreCliente}"
+                                   placeholder="Maria Lopez"
+                                   minlength="2" maxlength="150" required>
+                            <small class="error-js text-danger" data-error-for="nombreCliente"></small>
+                            <small class="text-danger d-block" th:if="${#fields.hasErrors('nombreCliente')}"
+                                   th:errors="*{nombreCliente}"></small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="correo" class="form-label fw-semibold">Correo electronico *</label>
+                            <input type="email" class="form-control" id="correo"
+                                   th:field="*{correo}" placeholder="tu@correo.com" required>
+                            <small class="error-js text-danger" data-error-for="correo"></small>
+                            <small class="text-danger d-block" th:if="${#fields.hasErrors('correo')}"
+                                   th:errors="*{correo}"></small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="productoId" class="form-label fw-semibold">Producto *</label>
+                            <select class="form-select" id="productoId" th:field="*{productoId}" required>
+                                <option value="">-- Selecciona un producto --</option>
+                                <option th:each="p : ${productos}"
+                                        th:value="${p.id}"
+                                        th:text="${p.nombre} + ' - C$ ' + ${p.precio}">Producto</option>
+                            </select>
+                            <small class="error-js text-danger" data-error-for="productoId"></small>
+                            <small class="text-danger d-block" th:if="${#fields.hasErrors('productoId')}"
+                                   th:errors="*{productoId}"></small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="cantidad" class="form-label fw-semibold">Cantidad *</label>
+                            <input type="number" class="form-control" id="cantidad"
+                                   th:field="*{cantidad}" min="1" max="100" value="1" required>
+                            <small class="error-js text-danger" data-error-for="cantidad"></small>
+                            <small class="text-danger d-block" th:if="${#fields.hasErrors('cantidad')}"
+                                   th:errors="*{cantidad}"></small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="comentario" class="form-label fw-semibold">Comentario o direccion</label>
+                            <textarea class="form-control" id="comentario"
+                                      th:field="*{comentario}" rows="3" maxlength="500"
+                                      placeholder="Direccion de entrega, talla, color..."></textarea>
+                            <small class="text-danger d-block" th:if="${#fields.hasErrors('comentario')}"
+                                   th:errors="*{comentario}"></small>
+                        </div>
+
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" class="btn btn-acento flex-fill">
+                                <i class="bi bi-check-lg"></i> Confirmar pedido
+                            </button>
+                            <a th:href="@{/catalogo}" class="btn btn-outline-acento">Cancelar</a>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
         </div>
-
-        <div class="campo">
-            <label for="correo">Correo electronico *</label>
-            <input type="email" id="correo" th:field="*{correo}"
-                   placeholder="tu@correo.com" required>
-            <small class="error-js" data-error-for="correo"></small>
-            <small class="error" th:if="${#fields.hasErrors('correo')}"
-                   th:errors="*{correo}"></small>
-        </div>
-
-        <div class="campo">
-            <label for="productoId">Producto *</label>
-            <select id="productoId" th:field="*{productoId}" required>
-                <option value="">-- Selecciona un producto --</option>
-                <option th:each="p : ${productos}"
-                        th:value="${p.id}"
-                        th:text="${p.nombre} + ' - C$ ' + ${p.precio}">Producto</option>
-            </select>
-            <small class="error-js" data-error-for="productoId"></small>
-            <small class="error" th:if="${#fields.hasErrors('productoId')}"
-                   th:errors="*{productoId}"></small>
-        </div>
-
-        <div class="campo">
-            <label for="cantidad">Cantidad *</label>
-            <input type="number" id="cantidad" th:field="*{cantidad}"
-                   min="1" max="100" value="1" required>
-            <small class="error-js" data-error-for="cantidad"></small>
-            <small class="error" th:if="${#fields.hasErrors('cantidad')}"
-                   th:errors="*{cantidad}"></small>
-        </div>
-
-        <div class="campo">
-            <label for="comentario">Comentario o direccion</label>
-            <textarea id="comentario" th:field="*{comentario}" rows="4"
-                      maxlength="500"
-                      placeholder="Direccion de entrega, talla, color..."></textarea>
-            <small class="error" th:if="${#fields.hasErrors('comentario')}"
-                   th:errors="*{comentario}"></small>
-        </div>
-
-        <div class="form-acciones">
-            <button type="submit" class="btn-principal">Confirmar pedido</button>
-            <a th:href="@{/catalogo}" class="btn-secundario">Cancelar</a>
-        </div>
-    </form>
+    </div>
 </main>
 
-<div id="toast" class="toast"></div>
+<div id="toast" class="toast-tienda"></div>
 
 <footer th:replace="~{fragments :: footer}"></footer>
 <div th:replace="~{fragments :: scripts}"></div>
