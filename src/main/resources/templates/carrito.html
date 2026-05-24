@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head(titulo=${titulo})}"></head>
+<body>
+
+<header th:replace="~{fragments :: header}"></header>
+
+<main class="container py-5">
+  <div class="text-center mb-4">
+    <h1 class="fw-bold">
+      <i class="bi bi-cart3 me-2" style="color: var(--color-acento);"></i>
+      Mi carrito
+    </h1>
+    <p class="text-muted">Revisa tus productos antes de confirmar el pedido</p>
+  </div>
+
+  <div th:if="${mensajeCarrito}" class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="bi bi-check-circle me-2"></i>
+    <span th:text="${mensajeCarrito}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+  <div th:if="${errorCarrito}" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="bi bi-exclamation-triangle me-2"></i>
+    <span th:text="${errorCarrito}"></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+
+  <div th:if="${estaVacio}" class="text-center py-5">
+    <i class="bi bi-bag-x fs-1 text-muted opacity-50"></i>
+    <h4 class="fw-bold mt-3">Tu carrito esta vacio</h4>
+    <p class="text-muted mb-4">Agrega algunos productos para comenzar tu compra.</p>
+    <a th:href="@{/catalogo}" class="btn btn-acento btn-lg">
+      <i class="bi bi-shop me-1"></i> Ir al catalogo
+    </a>
+  </div>
+
+  <div th:if="${!estaVacio}">
+
+    <div class="card border-0 shadow-sm d-none d-md-block">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table align-middle mb-0">
+            <thead class="table-light">
+            <tr>
+              <th scope="col" class="ps-4">Producto</th>
+              <th scope="col" class="text-center">Precio unitario</th>
+              <th scope="col" class="text-center">Cantidad</th>
+              <th scope="col" class="text-end">Subtotal</th>
+              <th scope="col" class="pe-4"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="item : ${items}">
+              <td class="ps-4">
+                <div class="d-flex align-items-center">
+                  <img th:src="@{'/images/' + ${item.imagen}}"
+                       th:alt="${item.nombre}"
+                       class="rounded"
+                       style="width:64px; height:80px; object-fit:cover;"
+                       onerror="this.src='/images/placeholder.svg'">
+                  <div class="ms-3">
+                    <h6 class="mb-0 fw-bold" th:text="${item.nombre}">Producto</h6>
+                    <a th:href="@{'/producto/' + ${item.productoId}}"
+                       class="small text-muted text-decoration-none">Ver detalle</a>
+                  </div>
+                </div>
+              </td>
+              <td class="text-center">
+                <span class="text-muted">C$ <span th:text="${item.precio}">0.00</span></span>
+              </td>
+              <td class="text-center">
+                <form th:action="@{/carrito/actualizar}" method="post" class="d-inline-flex align-items-center gap-1">
+                  <input type="hidden" name="productoId" th:value="${item.productoId}">
+                  <input type="number" name="cantidad"
+                         th:value="${item.cantidad}"
+                         min="1" max="100"
+                         class="form-control form-control-sm text-center"
+                         style="width:70px;"
+                         onchange="this.form.submit()">
+                </form>
+              </td>
+              <td class="text-end fw-bold" style="color: var(--color-acento-oscuro);">
+                C$ <span th:text="${item.subtotal}">0.00</span>
+              </td>
+              <td class="pe-4 text-end">
+                <form th:action="@{'/carrito/eliminar/' + ${item.productoId}}" method="post">
+                  <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </form>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-block d-md-none">
+      <div class="card border-0 shadow-sm mb-3" th:each="item : ${items}">
+        <div class="card-body">
+          <div class="d-flex">
+            <img th:src="@{'/images/' + ${item.imagen}}"
+                 th:alt="${item.nombre}"
+                 class="rounded"
+                 style="width:80px; height:100px; object-fit:cover;"
+                 onerror="this.src='/images/placeholder.svg'">
+            <div class="ms-3 flex-fill">
+              <h6 class="fw-bold mb-1" th:text="${item.nombre}">Producto</h6>
+              <p class="text-muted small mb-2">C$ <span th:text="${item.precio}">0.00</span> c/u</p>
+              <div class="d-flex align-items-center gap-2">
+                <form th:action="@{/carrito/actualizar}" method="post" class="d-inline-flex">
+                  <input type="hidden" name="productoId" th:value="${item.productoId}">
+                  <input type="number" name="cantidad"
+                         th:value="${item.cantidad}"
+                         min="1" max="100"
+                         class="form-control form-control-sm text-center"
+                         style="width:70px;"
+                         onchange="this.form.submit()">
+                </form>
+                <form th:action="@{'/carrito/eliminar/' + ${item.productoId}}" method="post">
+                  <button type="submit" class="btn btn-sm btn-outline-danger">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+          <hr class="my-2">
+          <div class="d-flex justify-content-between">
+            <span class="text-muted">Subtotal:</span>
+            <strong style="color: var(--color-acento-oscuro);">
+              C$ <span th:text="${item.subtotal}">0.00</span>
+            </strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mt-4">
+      <div class="col-12 col-md-6 d-flex gap-2 mb-3 mb-md-0">
+        <a th:href="@{/catalogo}" class="btn btn-outline-acento">
+          <i class="bi bi-arrow-left me-1"></i> Seguir comprando
+        </a>
+        <form th:action="@{/carrito/vaciar}" method="post"
+              onsubmit="return confirm('Vaciar todo el carrito?');">
+          <button type="submit" class="btn btn-outline-danger">
+            <i class="bi bi-trash me-1"></i> Vaciar carrito
+          </button>
+        </form>
+      </div>
+
+      <div class="col-12 col-md-6">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body">
+            <div class="d-flex justify-content-between mb-2">
+              <span class="text-muted">Subtotal:</span>
+              <span>C$ <span th:text="${total}">0.00</span></span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+              <span class="text-muted">Envio:</span>
+              <span class="text-success">Gratis</span>
+            </div>
+            <hr>
+            <div class="d-flex justify-content-between mb-3">
+              <strong class="fs-5">Total:</strong>
+              <strong class="fs-4" style="color: var(--color-acento-oscuro);">
+                C$ <span th:text="${total}">0.00</span>
+              </strong>
+            </div>
+            <form th:action="@{/carrito/finalizar}" method="post">
+              <button type="submit" class="btn btn-acento w-100 btn-lg">
+                <i class="bi bi-check2-circle me-1"></i> Finalizar pedido
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer th:replace="~{fragments :: footer}"></footer>
+<div th:replace="~{fragments :: scripts}"></div>
+
+</body>
+</html>
