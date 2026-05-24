@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments :: head(${titulo})}"></head>
+<head th:replace="~{fragments :: head(titulo=${titulo})}"></head>
 <body>
 
 <header th:replace="~{fragments :: header}"></header>
@@ -11,7 +11,14 @@
         <p class="text-muted">Explora todas nuestras prendas</p>
     </div>
 
-    <!-- FORMULARIO DE BUSQUEDA Y FILTROS COMBINADOS -->
+    <!-- Mensaje flash al agregar al carrito -->
+    <div th:if="${mensajeCarrito}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-cart-check me-2"></i>
+        <span th:text="${mensajeCarrito}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- FORMULARIO DE BUSQUEDA Y FILTROS -->
     <div class="card shadow-sm mb-4 border-0">
         <div class="card-body">
             <form th:action="@{/catalogo}" method="get" class="row g-2 align-items-end">
@@ -48,7 +55,7 @@
         </div>
     </div>
 
-    <!-- Chips de filtros activos -->
+    <!-- Chips filtros activos -->
     <div class="mb-3" th:if="${(nombreBuscado != null and !#strings.isEmpty(nombreBuscado)) or categoriaSeleccionada != null}">
         <small class="text-muted me-2">Filtros activos:</small>
 
@@ -91,12 +98,17 @@
                         <a th:href="@{'/producto/' + ${p.id}}" class="btn btn-outline-acento btn-sm flex-fill">
                             Ver detalle
                         </a>
-                        <button class="btn btn-acento btn-sm btn-agregar"
-                                th:data-id="${p.id}"
-                                th:data-nombre="${p.nombre}"
-                                th:disabled="${!p.disponible}">
-                            <i class="bi bi-plus-lg"></i>
-                        </button>
+                        <!-- Form POST al carrito (NO usar JS) -->
+                        <form th:action="@{/carrito/agregar}" method="post" class="d-inline">
+                            <input type="hidden" name="productoId" th:value="${p.id}">
+                            <input type="hidden" name="cantidad" value="1">
+                            <input type="hidden" name="volverA" value="/catalogo">
+                            <button type="submit" class="btn btn-acento btn-sm"
+                                    th:disabled="${!p.disponible}"
+                                    title="Agregar al carrito">
+                                <i class="bi bi-cart-plus"></i>
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -111,8 +123,6 @@
         <a th:href="@{/catalogo}" class="btn btn-acento">Ver todo el catalogo</a>
     </div>
 </main>
-
-<div id="toast" class="toast-tienda"></div>
 
 <footer th:replace="~{fragments :: footer}"></footer>
 <div th:replace="~{fragments :: scripts}"></div>

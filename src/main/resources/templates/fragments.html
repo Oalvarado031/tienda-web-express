@@ -1,131 +1,76 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments :: head(${titulo})}"></head>
-<body>
+<head th:fragment="head(titulo)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo}">Boutique Express</title>
 
-<header th:replace="~{fragments :: header}"></header>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- CSS personalizado -->
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body class="bg-light">
 
-<main class="container py-5">
-    <div class="text-center mb-4">
-        <h1 class="fw-bold">Catalogo</h1>
-        <p class="text-muted">Explora todas nuestras prendas</p>
-    </div>
+<header th:fragment="header">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold d-flex align-items-center" th:href="@{/}">
+                <span class="logo-icono me-2">B</span>
+                <span class="brand-text">Boutique <em class="text-acento">Express</em></span>
+            </a>
 
-    <!-- Mensaje flash al agregar al carrito -->
-    <div th:if="${mensajeCarrito}" class="alert alert-success alert-dismissible fade show" role="alert">
-        <i class="bi bi-cart-check me-2"></i>
-        <span th:text="${mensajeCarrito}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuPrincipal">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-    <!-- FORMULARIO DE BUSQUEDA Y FILTROS -->
-    <div class="card shadow-sm mb-4 border-0">
-        <div class="card-body">
-            <form th:action="@{/catalogo}" method="get" class="row g-2 align-items-end">
-
-                <div class="col-12 col-md-5">
-                    <label for="nombre" class="form-label fw-semibold small">Buscar por nombre</label>
-                    <input type="text" class="form-control" id="nombre" name="nombre"
-                           th:value="${nombreBuscado}"
-                           placeholder="Ej: vestido, blusa, jeans...">
-                </div>
-
-                <div class="col-12 col-md-4">
-                    <label for="categoriaId" class="form-label fw-semibold small">Categoria</label>
-                    <select class="form-select" id="categoriaId" name="categoriaId">
-                        <option value="">Todas las categorias</option>
-                        <option th:each="c : ${categorias}"
-                                th:value="${c.id}"
-                                th:text="${c.nombre}"
-                                th:selected="${categoriaSeleccionada != null and categoriaSeleccionada == c.id}">
-                            Categoria
-                        </option>
-                    </select>
-                </div>
-
-                <div class="col-12 col-md-3 d-flex gap-2">
-                    <button type="submit" class="btn btn-acento flex-fill">
-                        <i class="bi bi-search"></i> Buscar
-                    </button>
-                    <a th:href="@{/catalogo}" class="btn btn-outline-acento flex-fill">
-                        Limpiar
-                    </a>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Chips filtros activos -->
-    <div class="mb-3" th:if="${(nombreBuscado != null and !#strings.isEmpty(nombreBuscado)) or categoriaSeleccionada != null}">
-        <small class="text-muted me-2">Filtros activos:</small>
-
-        <span class="chip-busqueda me-1"
-              th:if="${nombreBuscado != null and !#strings.isEmpty(nombreBuscado)}">
-            <i class="bi bi-tag"></i>
-            Nombre: <strong th:text="${nombreBuscado}"></strong>
-        </span>
-
-        <span class="chip-busqueda me-1" th:if="${categoriaSeleccionada != null}">
-            <i class="bi bi-folder"></i>
-            Categoria:
-            <strong th:each="c : ${categorias}"
-                    th:if="${c.id == categoriaSeleccionada}"
-                    th:text="${c.nombre}"></strong>
-        </span>
-
-        <span class="text-muted small">&middot; <span th:text="${#lists.size(productos)}">0</span> resultados</span>
-    </div>
-
-    <!-- LISTADO DE PRODUCTOS -->
-    <div class="row g-4" th:if="${not #lists.isEmpty(productos)}">
-        <div class="col-12 col-sm-6 col-lg-3" th:each="p : ${productos}">
-            <div class="card tarjeta-producto h-100">
-                <div class="position-relative">
-                    <img th:src="@{'/images/' + ${p.imagen}}"
-                         th:alt="${p.nombre}"
-                         class="producto-img card-img-top"
-                         onerror="this.src='/images/placeholder.svg'">
-                    <span class="badge badge-categoria position-absolute top-0 start-0 m-2 px-2 py-1 rounded-pill"
-                          th:text="${p.categoria.nombre}">Categoria</span>
-                    <span class="badge position-absolute top-0 end-0 m-2 px-2 py-1 rounded-pill"
-                          th:classappend="${p.disponible} ? 'text-bg-success' : 'text-bg-danger'"
-                          th:text="${p.disponible} ? 'Disponible' : 'Agotado'">Disponible</span>
-                </div>
-                <div class="card-body d-flex flex-column">
-                    <h3 class="h6 fw-bold" th:text="${p.nombre}">Nombre</h3>
-                    <p class="precio mb-3">C$ <span th:text="${p.precio}">0.00</span></p>
-                    <div class="d-flex gap-2 mt-auto">
-                        <a th:href="@{'/producto/' + ${p.id}}" class="btn btn-outline-acento btn-sm flex-fill">
-                            Ver detalle
+            <div class="collapse navbar-collapse" id="menuPrincipal">
+                <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/}">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/catalogo}">Catalogo</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/buscar}">
+                            <i class="bi bi-search"></i> Buscar
                         </a>
-                        <!-- Form que envia POST a /carrito/agregar -->
-                        <form th:action="@{/carrito/agregar}" method="post" class="d-inline">
-                            <input type="hidden" name="productoId" th:value="${p.id}">
-                            <input type="hidden" name="cantidad" value="1">
-                            <input type="hidden" name="volverA" value="/catalogo">
-                            <button type="submit" class="btn btn-acento btn-sm"
-                                    th:disabled="${!p.disponible}"
-                                    title="Agregar al carrito">
-                                <i class="bi bi-cart-plus"></i>
-                            </button>
-                        </form>
-                    </div>
-                </div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/pedido}">Pedido</a>
+                    </li>
+                    <li class="nav-item ms-lg-2">
+                        <a th:href="@{/carrito}" class="btn btn-outline-acento position-relative">
+                            <i class="bi bi-bag"></i> Carrito
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                                  th:if="${totalItemsCarrito != null and totalItemsCarrito > 0}"
+                                  th:text="${totalItemsCarrito}">0</span>
+                        </a>
+                    </li>
+                </ul>
             </div>
         </div>
-    </div>
+    </nav>
+</header>
 
-    <!-- Mensaje cuando no hay resultados -->
-    <div th:if="${#lists.isEmpty(productos)}" class="alert alert-warning text-center py-5 mt-3">
-        <i class="bi bi-search fs-1 d-block mb-2"></i>
-        <h4 class="fw-bold">No se encontraron productos</h4>
-        <p class="mb-3">Prueba con otros terminos o limpia los filtros para ver todo el catalogo.</p>
-        <a th:href="@{/catalogo}" class="btn btn-acento">Ver todo el catalogo</a>
+<footer th:fragment="footer" class="footer-tienda text-white text-center py-4 mt-5">
+    <div class="container">
+        <p class="mb-1">&copy; 2025 Boutique Express &middot; Moda con estilo</p>
+        <p class="small mb-0 opacity-75">Hecho por Oscar Alvarado</p>
     </div>
-</main>
+</footer>
 
-<footer th:replace="~{fragments :: footer}"></footer>
-<div th:replace="~{fragments :: scripts}"></div>
+<div th:fragment="scripts">
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- JS personalizado -->
+    <script th:src="@{/js/app.js}"></script>
+</div>
 
 </body>
 </html>
